@@ -1,4 +1,8 @@
 keys.py
+attachment.pdf
+audio.*
+voice_note.*
+*.jpg
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,3 +1,7 @@
+python-telegram-bot[job-queue] --pre
+audiofile
+librosa
+pdfrw
 requests
 flask
 beautifulsoup4 

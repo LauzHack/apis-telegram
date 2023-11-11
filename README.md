@@ -1,4 +1,4 @@
-# api-hackathon
+# Telegram bots and APIs, [SLIDES](https://docs.google.com/presentation/d/1IedczIb_IedU-NWEnH4qHZCaX985zEsptzePF3b_vHA/edit?usp=sharing)
 
 
 ## Installation
@@ -14,4 +14,6 @@ conda activate apis
 (apis) pip install -r requirements.txt
 ```
 
-OpenAI documentation: https://platform.openai.com/docs/api-reference/introduction
+## Links
+
+Paperbot: https://github.com/lucafusarbassini/paperboat
