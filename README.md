@@ -1,5 +1,6 @@
 # Telegram bots and APIs, [SLIDES](https://docs.google.com/presentation/d/1IedczIb_IedU-NWEnH4qHZCaX985zEsptzePF3b_vHA/edit?usp=sharing)
 
+First used at a [mini-hackathon](https://lu.ma/lauzhack-apis-2023) (Nov 11, 2023).
 
 ## Installation
 
@@ -16,4 +17,4 @@ conda activate apis
 
 ## Links
 
-Paperbot: https://github.com/lucafusarbassini/paperboat
+Paperboat: https://github.com/lucafusarbassini/paperboat
