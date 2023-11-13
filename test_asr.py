@@ -10,5 +10,5 @@ def query(filename):
     response = requests.post(API_URL, headers=headers, data=data)
     return response.json()
 
-output = query("voice_note.ogg")
+output = query("voice_note_ex.ogg")
 print(output["text"])

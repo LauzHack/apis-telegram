@@ -1,8 +1,9 @@
-keys.py
 attachment.pdf
 audio.*
 voice_note.*
 *.jpg
+apis_env/
+keys.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

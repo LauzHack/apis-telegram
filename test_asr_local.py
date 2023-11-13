@@ -2,7 +2,7 @@
 # from transformers import pipeline
 
 # pipe = pipeline("automatic-speech-recognition", model="openai/whisper-large-v3")
-# output = pipe("voice_note.ogg")
+# output = pipe("voice_note_ex.ogg")
 
 from transformers import AutoProcessor, AutoModelForSpeechSeq2Seq
 import audiofile
@@ -12,7 +12,7 @@ processor = AutoProcessor.from_pretrained("openai/whisper-large-v3")
 model = AutoModelForSpeechSeq2Seq.from_pretrained("openai/whisper-large-v3")
 target_sr = processor.feature_extractor.sampling_rate
 
-signal, sampling_rate = audiofile.read("voice_note.ogg")
+signal, sampling_rate = audiofile.read("voice_note_ex.ogg")
 if sampling_rate != target_sr:
     signal = librosa.resample(signal, orig_sr=sampling_rate, target_sr=target_sr)
 
