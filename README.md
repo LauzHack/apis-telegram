@@ -17,7 +17,7 @@ source apis_env/bin/activate
 (apis_env) pip install -r requirements.txt
 ```
 
-## Links
+## Usage 
 
-- Slides on making Telegram bots and APIs: [link](https://docs.google.com/presentation/d/1IedczIb_IedU-NWEnH4qHZCaX985zEsptzePF3b_vHA/edit?usp=drive_link)
-- Slides on [PaperBoat](https://github.com/lucafusarbassini/paperboat) and OpenAI usage: [link](https://docs.google.com/presentation/d/1Otleuoi5-TfD3YCz1cS0k9MF-Tp7_E0Z/edit?usp=drive_link&ouid=115816041756434628590&rtpof=true&sd=true)
+1. Follow along the slides on making a Telegram bot and APIs: [link](https://docs.google.com/presentation/d/).
+2. Dive deeper with a specific bot - [PaperBoat](https://github.com/lucafusarbassini/paperboat) - to learn about about OpenAI, LangChain, and scrapping: [link](https://docs.google.com/presentation/d/1Otleuoi5-TfD3YCz1cS0k9MF-Tp7_E0Z/edit?usp=drive_link&ouid=115816041756434628590&rtpof=true&sd=true).
