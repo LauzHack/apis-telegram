@@ -5,7 +5,7 @@ First used at a [mini-hackathon](https://lu.ma/lauzhack-apis-2023) (Nov 11, 2023
 ## Installation
 
 ```bash
-# create and virtual environment
+# 1) create and activate virtual environment
 # -- EITHER with conda
 conda create -n apis_env python=3.11
 conda activate apis
@@ -13,7 +13,7 @@ conda activate apis
 python3.11 -m venv apis_env
 source apis_env/bin/activate
 
-# install dependencies
+# 2) install dependencies
 (apis_env) pip install -r requirements.txt
 ```
 
