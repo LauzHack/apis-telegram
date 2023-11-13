@@ -2,6 +2,8 @@
 
 First used at a [mini-hackathon](https://lu.ma/lauzhack-apis-2023) (Nov 11, 2023).
 
+Slides and recordings can be found here: https://go.epfl.ch/telegram-apis
+
 ## Installation
 
 ```bash
