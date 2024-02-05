@@ -10,7 +10,7 @@ Slides and recordings can be found here: https://go.epfl.ch/telegram-apis
 # 1) create and activate virtual environment
 # -- EITHER with conda
 conda create -n apis_env python=3.11
-conda activate apis
+conda activate apis_env
 # -- OR with venv
 python3.11 -m venv apis_env
 source apis_env/bin/activate
