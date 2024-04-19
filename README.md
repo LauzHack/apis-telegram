@@ -23,3 +23,22 @@ source apis_env/bin/activate
 
 1. Follow along the slides on making a Telegram bot and APIs: [link](https://docs.google.com/presentation/d/1IedczIb_IedU-NWEnH4qHZCaX985zEsptzePF3b_vHA/edit?usp=sharing).
 2. Dive deeper with a specific bot - [PaperBoat](https://github.com/lucafusarbassini/paperboat) - to learn about about OpenAI, LangChain, and scrapping: [link](https://docs.google.com/presentation/d/1Otleuoi5-TfD3YCz1cS0k9MF-Tp7_E0Z/edit?usp=drive_link&ouid=115816041756434628590&rtpof=true&sd=true).
+
+## On IC Cluster (RunAI)
+
+From root of [this repo](https://github.com/epfml/getting-started-lauzhack/?tab=readme-ov-file#4-use-this-repo-to-start-a-llm-training-run-with-your-fork-of-the-llm-baselines-code), create a pod:
+```bash
+python csub.py -n sandbox
+# runai list   # to check the status
+
+# when it is running, connect to pod to be insite a Terminal!
+runai exec sandbox -it -- zsh
+
+# clone repo inside home folder
+cd /mloscratch/<your_username>
+git clone https://github.com/<your username>/apis-telegram.git
+cd apis-telegram
+
+# install dependencies
+pip install -r requirements.txt
+```
