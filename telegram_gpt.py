@@ -22,10 +22,13 @@ from telegram.ext import Application, ContextTypes, MessageHandler, filters, Com
 from keys import TELEGRAM_KEY, HUGGING_FACE_KEY, OPENAI_KEY
 from pprint import pprint
 from openai import OpenAI
+import torch
 
 
 MAX_CHAT_HISTORY = 10
 VERBOSE = True
+LOCAL_ASR = False
+CUDA_AVAILABLE = torch.cuda.is_available()
 
 
 global USER_MESSAGES    # user message history
@@ -49,22 +52,45 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
+# prepare ASR
+if LOCAL_ASR:
+    from transformers import pipeline
+    import audiofile
+    import librosa
 
+    if CUDA_AVAILABLE:
+        asr_pipe = pipeline("automatic-speech-recognition", model="openai/whisper-large-v3", device=0)
+    else:
+        asr_pipe = pipeline("automatic-speech-recognition", model="openai/whisper-large-v3")
+    asr_rate = 16000
+
+# querying ASR
 def query_asr(filename):
-    with open(filename, "rb") as f:
-        data = f.read()
-    response = requests.post(
-        "https://api-inference.huggingface.co/models/openai/whisper-large-v3", 
-        headers=headers, 
-        data=data
-    )
-    return response.json()
 
+    if LOCAL_ASR:
 
+        signal, sampling_rate = audiofile.read(filename)
+        if sampling_rate != asr_rate:
+            signal = librosa.resample(signal, orig_sr=sampling_rate, target_sr=asr_rate)
+        output = asr_pipe(signal, generate_kwargs={"language": "english"})
+        return output
+
+    else:
+        # Hugging Face endpoint
+        with open(filename, "rb") as f:
+            data = f.read()
+        response = requests.post(
+            "https://api-inference.huggingface.co/models/openai/whisper-large-v3", 
+            headers=headers, 
+            data=data
+        )
+        return response.json()
+
+# querying LLM
 def query_llm(input_text, user_id):
 
     if user_id not in N_WORDS:
-        N_WORDS[user_id] = None
+        N_WORDS[user_id] = -1
 
     if N_WORDS[user_id] > 0:
         input_text += f" (in {N_WORDS[user_id]} words or less)"

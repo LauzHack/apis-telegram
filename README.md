@@ -42,3 +42,10 @@ cd apis-telegram
 # install dependencies
 pip install -r requirements.txt
 ```
+
+Connecting with VScode: https://github.com/epfml/getting-started-lauzhack/?tab=readme-ov-file#using-vscode
+
+Launching bot!
+```bash
+python3 telegram_gpt.py
+```
