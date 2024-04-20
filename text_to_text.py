@@ -11,18 +11,24 @@ def query(payload):
 	response = requests.post(API_URL, headers=headers, json=payload)
 	return response.json()
 
-def text_to_text(input: str):
+def text_to_text(input: str, target_lang: str, input_lang: str = None):
     input_language = detect_language(input)
-    #print(input_language)
+    if isinstance(input_language, list):
+          input_language = input_lang
+    #print(f"Text input: {input}")
     output = query({
         "inputs": input,
-        "parameters": {"src_lang": input_language, "tgt_lang": "fr_XX"}
+        "parameters": {"src_lang": input_language, "tgt_lang": target_lang}
     })
-    return output[0]['translation_text']
+    print(output)
+    translated_text = output[0]['translation_text']
+    #print(f"Translated text: {translated_text}")
+    return translated_text
 
 
 # testing
-input1 = "Ciao, mi chiamo Matthias e oggi facciamo un hackaton"
-input2 = "Меня зовут Вольфганг и я живу в Берлине"
-print(text_to_text(input2))
+#input1 = "Ciao, mi chiamo Matthias e oggi facciamo un hackaton"
+#input2 = "Меня зовут Вольфганг и я живу в Берлине"
+#target_lang = "fr_XX"
+#text_to_text(input1, target_lang)
 
