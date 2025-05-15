@@ -19,7 +19,7 @@ else:
 target_sr = 16000
 
 start_time = time.time()
-signal, sampling_rate = audiofile.read("voice_note_ex.ogg")
+signal, sampling_rate = audiofile.read("voice_note_ex.wav")
 if sampling_rate != target_sr:
     signal = librosa.resample(signal, orig_sr=sampling_rate, target_sr=target_sr)
 output = pipe(signal, generate_kwargs={"language": "english"})
@@ -41,6 +41,6 @@ print("Time taken (pipeline):", time.time() - start_time)
 # input_features = input_features.to("cuda" if cuda_available else "cpu")
 # generated_ids = model.generate(input_features=input_features)
 # output = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+# print("Time taken (manual):", time.time() - start_time)
 
 print(output)
-print("Time taken (manual):", time.time() - start_time)

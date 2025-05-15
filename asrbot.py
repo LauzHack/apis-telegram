@@ -18,7 +18,7 @@ import requests
 from keys import HUGGING_FACE_KEY
 
 
-headers = {"Authorization": f"Bearer {HUGGING_FACE_KEY}"}
+headers = {"Authorization": f"Bearer {HUGGING_FACE_KEY}", "Content-Type": "audio/wav"}
 
 # Enable logging
 logging.basicConfig(
@@ -34,7 +34,7 @@ def query_asr(filename):
     with open(filename, "rb") as f:
         data = f.read()
     response = requests.post(
-        "https://api-inference.huggingface.co/models/openai/whisper-large-v3", 
+        "https://router.huggingface.co/hf-inference/models/openai/whisper-large-v3", 
         headers=headers, 
         data=data
     )
@@ -46,7 +46,7 @@ async def voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     audio_file = await update.message.voice.get_file()
 
     # load audio into numpy array
-    tmp_file = "voice_note.ogg"
+    tmp_file = "voice_note.wav"
     await audio_file.download_to_drive(tmp_file)
 
     # transcription

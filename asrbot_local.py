@@ -33,7 +33,7 @@ async def voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     audio_file = await update.message.voice.get_file()
 
     # load audio into numpy array
-    tmp_file = "voice_note.ogg"
+    tmp_file = "voice_note.wav"
     await audio_file.download_to_drive(tmp_file)
 
     # transcription
@@ -41,7 +41,7 @@ async def voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     model = AutoModelForSpeechSeq2Seq.from_pretrained("openai/whisper-large-v3")
     target_sr = processor.feature_extractor.sampling_rate
 
-    signal, sampling_rate = audiofile.read("voice_note.ogg")
+    signal, sampling_rate = audiofile.read(tmp_file)
     if sampling_rate != target_sr:
         signal = librosa.resample(signal, orig_sr=sampling_rate, target_sr=target_sr)
 

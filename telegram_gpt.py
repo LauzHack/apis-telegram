@@ -10,6 +10,7 @@ To set commands (after running /setcommands from BotFather):
 ```
 clear - Clear chat history.
 n_words - How many words for response.
+listen - Listen to the bot's response.
 ```
 
 Press Ctrl-C on the command line to stop the bot.
@@ -19,16 +20,19 @@ import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 import requests
 from telegram.ext import Application, ContextTypes, MessageHandler, filters, CommandHandler, CallbackQueryHandler
-from keys import TELEGRAM_KEY, HUGGING_FACE_KEY, OPENAI_KEY
+from keys import TELEGRAM_KEY, HUGGING_FACE_KEY, OPENAI_KEY, TOGETHER_AI
 from pprint import pprint
 from openai import OpenAI
 import torch
+from together import Together
 
 
 MAX_CHAT_HISTORY = 10
 VERBOSE = True
 LOCAL_ASR = False
 CUDA_AVAILABLE = torch.cuda.is_available()
+USE_TOGETHER_AI = True
+TELEGRAM_MAX_OUTPUT = 4096    # Telegram max output length
 
 
 global USER_MESSAGES    # user message history
@@ -38,10 +42,25 @@ USER_MESSAGES = dict()    # dict of chat/group IDs and their messages
 N_WORDS = dict()
 
 
-headers = {"Authorization": f"Bearer {HUGGING_FACE_KEY}"}
+# config for speech transcription
+headers = {"Authorization": f"Bearer {HUGGING_FACE_KEY}", "Content-Type": "audio/wav"}
+
+# prepare TTS
+client_tts = Together(
+    api_key=TOGETHER_AI,
+) 
 
 # prepare LLM
-client = OpenAI(api_key=OPENAI_KEY)
+if USE_TOGETHER_AI:
+    print("Using Together AI")
+    llm_model = "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8"
+    client = Together(
+        api_key=TOGETHER_AI,
+    ) 
+else:
+    print("Using OpenAI")
+    llm_model = "gpt-3.5-turbo"
+    client = OpenAI(api_key=OPENAI_KEY)
 
 # Enable logging
 logging.basicConfig(
@@ -68,6 +87,7 @@ if LOCAL_ASR:
 def query_asr(filename):
 
     if LOCAL_ASR:
+        # TODO: check if works
 
         signal, sampling_rate = audiofile.read(filename)
         if sampling_rate != asr_rate:
@@ -80,7 +100,7 @@ def query_asr(filename):
         with open(filename, "rb") as f:
             data = f.read()
         response = requests.post(
-            "https://api-inference.huggingface.co/models/openai/whisper-large-v3", 
+            "https://router.huggingface.co/hf-inference/models/openai/whisper-large-v3", 
             headers=headers, 
             data=data
         )
@@ -102,9 +122,8 @@ def query_llm(input_text, user_id):
         USER_MESSAGES[user_id] = [{"role": "user", "content": input_text}]
 
     # prompt LLM
-    # -- OpenAI
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model=llm_model,
         messages=USER_MESSAGES[user_id]
     )
     text_response = response.choices[0].message.content
@@ -122,25 +141,25 @@ def query_llm(input_text, user_id):
         # remove question
         USER_MESSAGES[user_id].pop(0)
 
+    text_response = f"MODEL: {llm_model}\n\n{text_response}"
+    # truncate response if too long
+    if len(text_response) > TELEGRAM_MAX_OUTPUT:
+        text_response = text_response[:TELEGRAM_MAX_OUTPUT-20] + "\n\nOUTPUT TRUNCATED"
     return text_response
 
 
 async def voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
     """STEP 1) Speech to text."""
     audio_file = await update.message.voice.get_file()
 
     # load audio into numpy array
-    tmp_file = "voice_note.ogg"
+    tmp_file = "voice_note.wav"
     await audio_file.download_to_drive(tmp_file)
 
     # transcription
     output = query_asr(tmp_file)
-    try:
-        output = output["text"]
-    except:
-        output = "Sorry, I could not understand the audio message. Please try again."
-        await update.message.reply_text(output)
-        return
+    output = output["text"]
 
     """STEP 2) Prompt LLM."""
     text_response = query_llm(output, update.message.from_user.id)
@@ -188,19 +207,12 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # update number of words
     N_WORDS[user_id] = int(query.data)
 
+    response_text = f"Number of words for response: {N_WORDS[user_id]}"
     if VERBOSE:
-        print(f"Number of words for response: {N_WORDS[user_id]}")
-    
-    if user_id in USER_MESSAGES:
-        # request LLM output again
-        # -- remove last two messages
-        del USER_MESSAGES[user_id][-1]
-        input_text = USER_MESSAGES[user_id][-1]["content"]
-        del USER_MESSAGES[user_id][-1]
-        text_response = query_llm(input_text, user_id)
+        print(response_text)
 
-        # respond text through Telegram
-        await query.message.reply_text(text_response)
+    # respond text through Telegram
+    await query.message.reply_text(response_text)
 
 
 async def clear(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -209,6 +221,27 @@ async def clear(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     del USER_MESSAGES[user_id]
     await update.message.reply_text("Chat history cleared.")
 
+async def listen(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Listen to the bot's response."""
+    user_id = update.message.from_user.id
+    if user_id not in USER_MESSAGES:
+        await update.message.reply_text("No chat history found.")
+        return
+
+    # get last message
+    last_message = USER_MESSAGES[user_id][-1]["content"]
+
+    # convert text to speech
+    speech_file_path = "speech.wav"
+    response = client_tts.audio.speech.create(
+        model="cartesia/sonic",
+        input=last_message,
+        voice="1920's radioman",
+    )
+    response.stream_to_file(speech_file_path)
+
+    # send audio file
+    await update.message.reply_audio(speech_file_path, caption=last_message)
 
 def main() -> None:
     """Start the bot."""
@@ -223,9 +256,11 @@ def main() -> None:
     # text input
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_input, block=True))
 
+
     # commands
     application.add_handler(CommandHandler("n_words", n_words))
     application.add_handler(CommandHandler("clear", clear, block=False))
+    application.add_handler(CommandHandler("listen", listen, block=False))
     application.add_handler(CallbackQueryHandler(button))
 
 

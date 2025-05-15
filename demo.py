@@ -69,7 +69,7 @@ async def voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     audio_file = await update.message.voice.get_file()
 
     # load audio into numpy array
-    tmp_file = "voice_note.ogg"
+    tmp_file = "voice_note.wav"
     await audio_file.download_to_drive(tmp_file)
 
     signal, sampling_rate = audiofile.read(tmp_file, always_2d=True)

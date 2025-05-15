@@ -9,3 +9,4 @@ Pillow
 transformers
 torch
 openai
+together
