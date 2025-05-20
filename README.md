@@ -3,7 +3,7 @@
 This tutorial has been given at multiple LauzHack events:
 - [Mini-hackathon](https://lu.ma/lauzhack-apis-2023) (Nov 11, 2023).
 - [Mini-hackathon](https://lu.ma/lauzhack-llms-apis) (Apr 19-20, 2024), projects that used it can be found [here](https://lauzhack-llms-genai-2024.devpost.com/submissions/search?utf8=%E2%9C%93&prize_filter%5Bprizes%5D%5B%5D=76173).
-- [Mini-hackathon](https://lu.ma/6k75ky9t) (May 16-17, 2025).
+- [Mini-hackathon](https://lu.ma/6k75ky9t) (May 16-17, 2025), six of [the projects](https://lauzhack-llms-multimodal-2025.devpost.com/project-gallery) used it.
 
 Slides and recordings can be found here: https://go.epfl.ch/telegram-apis
 
